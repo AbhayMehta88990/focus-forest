@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-neo-yellow: #FBFF48;
+  --color-neo-green: #33FF57;
+  --color-neo-red: #FF2A2A;
+  --color-neo-white: #FFFDF5;
+  --color-neo-black: #121212;
+  --color-forest: #118A48;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}
+
+:root {
+  color: #121212;
+  background: #fffdf5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #fffdf5;
+  cursor: default;
+  user-select: none;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.neo-grid {
+  background-color: #fffdf5;
+  background-image:
+    radial-gradient(#121212 1px, transparent 1px),
+    linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+    linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+  background-size: 40px 40px, 100px 100px, 100px 100px;
+}
+
+.shadow-hard {
+  box-shadow: 4px 4px 0 #121212;
+}
+
+.shadow-hard-sm {
+  box-shadow: 2px 2px 0 #121212;
+}
+
+.shadow-hard-lg {
+  box-shadow: 8px 8px 0 #121212;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(30px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-5px);
+  }
+  70% {
+    transform: scale(0.97) translateY(2px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
