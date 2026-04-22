@@ -17,16 +17,9 @@ RUN keytool -importcert -alias aiven-ca -file /app/ca.pem \
 
 EXPOSE 3001
 
-# Debug: print env vars on startup (password length only, not actual value)
 ENTRYPOINT ["sh", "-c", "\
-  echo '=== ENV DEBUG ===' && \
-  echo \"SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL\" && \
-  echo \"SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME\" && \
-  echo \"SPRING_DATASOURCE_PASSWORD length=${#SPRING_DATASOURCE_PASSWORD}\" && \
-  echo \"DB_URL=$DB_URL\" && \
-  echo \"DB_USER=$DB_USER\" && \
-  echo \"DB_PASS length=${#DB_PASS}\" && \
-  echo '==================' && \
   java -Djavax.net.ssl.trustStore=/app/truststore.jks \
        -Djavax.net.ssl.trustStorePassword=changeit \
+       -Dspring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID} \
+       -Dspring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET} \
        -jar app.jar"]
