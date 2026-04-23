@@ -200,7 +200,7 @@ export default function TimerComponent() {
   const [showCategoryInput, setShowCategoryInput] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [plantType, setPlantType] = useState('tree');
+  const [plantType, setPlantType] = useState('coffee');
   const completionHandledRef = useRef(false);
 
   const addCategory = () => {
