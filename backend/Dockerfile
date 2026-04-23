@@ -17,9 +17,19 @@ RUN keytool -importcert -alias aiven-ca -file /app/ca.pem \
 
 EXPOSE 3001
 
-ENTRYPOINT ["sh", "-c", "\
-  java -Djavax.net.ssl.trustStore=/app/truststore.jks \
-       -Djavax.net.ssl.trustStorePassword=changeit \
-       -Dspring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID} \
-       -Dspring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET} \
-       -jar app.jar"]
+# Use a startup script to properly handle env vars with special characters
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "=== OAUTH DEBUG ==="' >> /app/start.sh && \
+    echo 'echo "GOOGLE_CLIENT_ID length=${#GOOGLE_CLIENT_ID}"' >> /app/start.sh && \
+    echo 'echo "GOOGLE_CLIENT_SECRET length=${#GOOGLE_CLIENT_SECRET}"' >> /app/start.sh && \
+    echo 'echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"' >> /app/start.sh && \
+    echo 'echo "==================="' >> /app/start.sh && \
+    echo 'exec java \' >> /app/start.sh && \
+    echo '  -Djavax.net.ssl.trustStore=/app/truststore.jks \' >> /app/start.sh && \
+    echo '  -Djavax.net.ssl.trustStorePassword=changeit \' >> /app/start.sh && \
+    echo '  -Dspring.security.oauth2.client.registration.google.client-id="${GOOGLE_CLIENT_ID}" \' >> /app/start.sh && \
+    echo '  -Dspring.security.oauth2.client.registration.google.client-secret="${GOOGLE_CLIENT_SECRET}" \' >> /app/start.sh && \
+    echo '  -jar app.jar' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]
