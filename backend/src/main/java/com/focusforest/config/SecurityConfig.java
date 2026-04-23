@@ -61,12 +61,8 @@ public class SecurityConfig {
                     response.sendRedirect(frontendUrl);
                 })
                 .failureHandler((request, response, exception) -> {
-                    System.err.println("=== OAUTH LOGIN FAILED ===");
-                    System.err.println("Error: " + exception.getMessage());
-                    System.err.println("Cause: " + (exception.getCause() != null ? exception.getCause().getMessage() : "none"));
-                    exception.printStackTrace();
-                    System.err.println("==========================");
-                    response.sendRedirect(frontendUrl + "/login?error=true");
+                    String errorMsg = java.net.URLEncoder.encode(exception.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
+                    response.sendRedirect(frontendUrl + "/login?error=" + errorMsg);
                 })
             )
             .logout(logout -> logout
