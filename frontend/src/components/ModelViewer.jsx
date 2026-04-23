@@ -5,10 +5,10 @@ import { ACESFilmicToneMapping, Box3, Vector3 } from 'three';
 
 // Plant types with their 3 growth stage models (1=seed, 2=growing, 3=mature)
 export const PLANT_TYPES = [
-  { id: 'tree', label: 'Tree', emoji: '🌳' },
-  { id: 'bamboo', label: 'Bamboo', emoji: '🎋' },
   { id: 'coffee', label: 'Coffee', emoji: '☕' },
+  { id: 'tree', label: 'Tree', emoji: '🌳' },
   { id: 'palm', label: 'Palm', emoji: '🌴' },
+  { id: 'bamboo', label: 'Bamboo', emoji: '🎋' },
 ];
 
 function getModelPath(plantType, stage) {

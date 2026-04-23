@@ -7,6 +7,7 @@ const backendUrl = isDev ? 'http://localhost:3001' : '';
 export const BASE_URL = backendUrl;
 export const API_URL = `${backendUrl}/api`;
 
-// WebSocket must connect directly to Render (Vercel doesn't proxy WebSockets)
+// WebSocket/SockJS must connect directly to Render (Vercel doesn't proxy WebSockets)
+// SockJS needs an HTTP(S) URL - it handles the WS upgrade internally
 const wsBackend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-export const WS_URL = wsBackend.replace(/^http/, 'ws') + '/ws';
+export const WS_URL = wsBackend + '/ws';
