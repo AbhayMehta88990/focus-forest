@@ -1,5 +1,8 @@
 {
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://focus-forest.onrender.com/api/:path*" },
+    { "source": "/oauth2/:path*", "destination": "https://focus-forest.onrender.com/oauth2/:path*" },
+    { "source": "/login/oauth2/:path*", "destination": "https://focus-forest.onrender.com/login/oauth2/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
