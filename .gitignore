@@ -16,3 +16,5 @@ backend/*.iml
 backend/.mvn/
 backend/mvnw
 backend/mvnw.cmd
+backend/*.mv.db
+backend/*.trace.db

@@ -1,5 +1,5 @@
-import { createElement, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CheckCircle2, CircleX, Clock, Leaf, Minus, Play, Plus, RotateCcw, Sprout, Square, Trees, PlusCircle, X, PartyPopper } from 'lucide-react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CheckCircle2, CircleX, Clock, Minus, Play, Plus, RotateCcw, Square, PlusCircle, X, PartyPopper } from 'lucide-react';
 import ModelViewer, { PLANT_TYPES } from './ModelViewer';
 
 function playBeep() {
