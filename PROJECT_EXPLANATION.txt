@@ -144,4 +144,36 @@ g) config.js (Frontend - URL Configuration)
   study_rooms  — id, room_code, host_user_id, timer_duration, status, created_at
 
 
+8. DATABASE SETUP WITH AIVEN
+-----------------------------
+We use Aiven Cloud to host a MySQL database in production (free tier).
+
+Steps to set up:
+  1. Go to https://aiven.io and create a free account
+  2. Click "Create Service" → Choose "MySQL"
+  3. Select the free plan and a region close to your server
+  4. Aiven creates the database and gives you connection details:
+     - Host: mysql-xxxx.aivencloud.com
+     - Port: 18498
+     - Database: defaultdb
+     - Username: avnadmin
+     - Password: (auto-generated)
+  5. Download the CA certificate (ca.pem) from the Aiven dashboard
+     - This is needed for SSL-encrypted connections
+  6. Add the connection URL to Render as environment variables:
+     - SPRING_DATASOURCE_URL = jdbc:mysql://host:port/defaultdb?sslMode=REQUIRED
+     - SPRING_DATASOURCE_USERNAME = avnadmin
+     - SPRING_DATASOURCE_PASSWORD = (your password)
+  7. The ca.pem file is placed in the backend folder and imported into
+     Java's truststore via the Dockerfile so the backend can connect securely
+  8. Hibernate (spring.jpa.hibernate.ddl-auto=update) automatically creates
+     all tables on first startup — no manual SQL needed
+
+Why Aiven:
+  - Free managed MySQL in the cloud
+  - SSL encryption out of the box
+  - No need to manage your own database server
+  - Works with Render's free tier backend
+
+
 ================================================================================
