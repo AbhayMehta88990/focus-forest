@@ -261,13 +261,26 @@ export default function StudyTogether() {
               setMessages((prev) => [...prev, { system: true, text: `${data.joinedName} joined the room` }]);
             }
           } else if (data.type === 'join') {
-            // Legacy single join message (old backend fallback)
+            // Add participant to local list
             setParticipants((prev) => {
               if (prev.find((p) => p.name === data.name)) return prev;
               return [...prev, { name: data.name, picture: data.picture }];
             });
+            // Show system message for other users joining
             if (data.name !== user?.name) {
               setMessages((prev) => [...prev, { system: true, text: `${data.name} joined the room` }]);
+              // Re-announce ourselves so the new joiner knows we exist
+              // Only respond to non-reannounce messages to prevent infinite loops
+              if (!data.reannounce) {
+                setTimeout(() => {
+                  if (client.active) {
+                    client.publish({
+                      destination: `/app/room/${code}/join`,
+                      body: JSON.stringify({ name: user.name, picture: user.picture, reannounce: true }),
+                    });
+                  }
+                }, 300);
+              }
             }
           } else if (data.type === 'leave') {
             setParticipants((prev) => prev.filter((p) => p.name !== data.name));
@@ -293,7 +306,7 @@ export default function StudyTogether() {
     client.activate();
     stompRef.current = client;
     roomCodeRef.current = code;
-  }, [user, handleSignalingMessage]);
+  }, [user, handleSignalingMessage, closePeer]);
 
   // Cleanup
   useEffect(() => {
