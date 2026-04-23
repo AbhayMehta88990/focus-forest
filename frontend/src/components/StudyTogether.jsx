@@ -254,20 +254,13 @@ export default function StudyTogether() {
         // Subscribe to participants
         client.subscribe(`/topic/room/${code}/participants`, (msg) => {
           const data = JSON.parse(msg.body);
-          if (data.type === 'join') {
-            if (data.name === user.name) return; // ignore own join echo
-            setParticipants((prev) => {
-              if (prev.find((p) => p.name === data.name)) return prev;
-              return [...prev, { name: data.name, picture: data.picture }];
-            });
-            setMessages((prev) => [...prev, { system: true, text: `${data.name} joined the room` }]);
-            // Re-announce ourselves so the new joiner sees us
-            setTimeout(() => {
-              client.publish({
-                destination: `/app/room/${code}/join`,
-                body: JSON.stringify({ name: user.name, picture: user.picture }),
-              });
-            }, 500);
+          if (data.type === 'sync') {
+            // Full participant list from server
+            setParticipants(data.participants.map(p => ({ name: p.name, picture: p.picture })));
+            // Show join message for the new joiner (not ourselves)
+            if (data.joinedName && data.joinedName !== user?.name) {
+              setMessages((prev) => [...prev, { system: true, text: `${data.joinedName} joined the room` }]);
+            }
           } else if (data.type === 'leave') {
             setParticipants((prev) => prev.filter((p) => p.name !== data.name));
             setMessages((prev) => [...prev, { system: true, text: `${data.name} left the room` }]);
@@ -342,7 +335,6 @@ export default function StudyTogether() {
       setRoomCode(data.roomCode);
       setRoomInfo(data);
       setTimeLeft(data.timerDuration);
-      setParticipants([{ name: user.name, picture: user.picture }]);
       setView('room');
       connectWs(data.roomCode);
     } catch (err) {
@@ -363,7 +355,6 @@ export default function StudyTogether() {
       setRoomCode(code);
       setRoomInfo(data);
       setTimeLeft(data.timerDuration);
-      setParticipants([{ name: user.name, picture: user.picture }]);
       setView('room');
       connectWs(code);
     } catch (err) {
@@ -666,25 +657,19 @@ export default function StudyTogether() {
                 );
               }
               const isMe = msg.name === user?.name;
-              // Generate a unique color per user name
-              const otherColors = ['bg-neo-yellow', 'bg-blue-200', 'bg-purple-200', 'bg-pink-200', 'bg-orange-200', 'bg-cyan-200', 'bg-amber-200'];
-              const nameHash = (msg.name || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-              const otherBg = otherColors[nameHash % otherColors.length];
               return (
-                <div key={i} className={`flex gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                  {!isMe && (
-                    msg.picture ? (
-                      <img src={msg.picture} alt={msg.name} className="h-7 w-7 shrink-0 rounded-full border border-neo-black" referrerPolicy="no-referrer" />
-                    ) : (
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neo-green text-xs font-black border border-neo-black">
-                        {msg.name?.charAt(0)}
-                      </div>
-                    )
+                <div key={i} className={`flex gap-2 ${isMe ? 'flex-row-reverse' : ''}`}>
+                  {msg.picture ? (
+                    <img src={msg.picture} alt={msg.name} className="h-7 w-7 shrink-0 rounded-full border border-neo-black" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neo-green text-xs font-black border border-neo-black">
+                      {msg.name?.charAt(0)}
+                    </div>
                   )}
                   <div className={`max-w-[75%] border-2 border-neo-black px-3 py-2 ${
-                    isMe ? 'bg-neo-green' : otherBg
+                    isMe ? 'bg-neo-green' : 'bg-neo-yellow'
                   }`}>
-                    {!isMe && <p className="font-mono text-xs font-bold text-neutral-600">{msg.name}</p>}
+                    <p className="font-mono text-xs font-bold text-neutral-600">{msg.name}</p>
                     <p className="text-sm font-bold">{msg.text}</p>
                   </div>
                 </div>
