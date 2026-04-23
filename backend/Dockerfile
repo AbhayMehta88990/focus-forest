@@ -17,7 +17,16 @@ RUN keytool -importcert -alias aiven-ca -file /app/ca.pem \
 
 EXPOSE 3001
 
-# Startup script with proper quoting for env vars
-RUN printf '#!/bin/sh\nexec java \\\n  -Dspring.security.oauth2.client.registration.google.client-id="${GOOGLE_CLIENT_ID}" \\\n  -Dspring.security.oauth2.client.registration.google.client-secret="${GOOGLE_CLIENT_SECRET}" \\\n  -jar app.jar\n' > /app/start.sh && chmod +x /app/start.sh
+# Startup script - pass ALL env vars as JVM system properties
+RUN cat <<'SCRIPT' > /app/start.sh
+#!/bin/sh
+exec java \
+  -Dspring.security.oauth2.client.registration.google.client-id="${GOOGLE_CLIENT_ID}" \
+  -Dspring.security.oauth2.client.registration.google.client-secret="${GOOGLE_CLIENT_SECRET}" \
+  -Dspring.security.oauth2.client.registration.google.redirect-uri="${OAUTH_REDIRECT_URI}" \
+  -Dapp.frontend.url="${FRONTEND_URL}" \
+  -jar app.jar
+SCRIPT
+RUN chmod +x /app/start.sh
 
 ENTRYPOINT ["/app/start.sh"]
