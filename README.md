@@ -6,19 +6,7 @@
 
 ---
 
-## ✨ Features
-
-- ⏱️ **Focus Timer** — Pomodoro-style timer (10–180 min) with 3D plant growth
-- 🌿 **Plant Collection** — Choose from Coffee, Tree, Palm, or Bamboo
-- 📊 **Dashboard** — Focus analytics with daily stats and category breakdown
-- 🏆 **Leaderboard** — Compete with other users by total focus time
-- 👥 **Study Together** — Real-time study rooms with chat, shared timer & camera
-- 🎵 **Lofi Player** — Built-in ambient sounds for focus sessions
-- 🔐 **Google Login** — Secure OAuth2 authentication
-
----
-
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -29,7 +17,7 @@
 
 ---
 
-## 🚀 Run Locally
+##  Run Locally
 
 ### Prerequisites
 
@@ -105,50 +93,3 @@ Frontend will start on **http://localhost:5173**
 Go to [http://localhost:5173](http://localhost:5173) and sign in with Google!
 
 ---
-
-## 📁 Project Structure
-
-```
-focus-forest/
-├── backend/
-│   ├── src/main/java/com/focusforest/
-│   │   ├── config/          # SecurityConfig, WebSocketConfig
-│   │   ├── controller/      # REST & WebSocket controllers
-│   │   ├── dto/             # Request/Response objects
-│   │   ├── model/           # User, Session, StudyRoom entities
-│   │   ├── repository/      # JPA repositories
-│   │   └── service/         # Business logic
-│   ├── Dockerfile           # Production Docker config
-│   └── pom.xml              # Maven dependencies
-├── frontend/
-│   ├── public/plants/       # 3D plant models (.glb)
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── config.js        # API/WebSocket URL config
-│   │   ├── App.jsx          # Main app with navigation
-│   │   └── index.css        # Global styles & theme
-│   ├── vercel.json          # Vercel proxy config
-│   └── package.json         # NPM dependencies
-└── PROJECT_EXPLANATION.txt  # Detailed project documentation
-```
-
----
-
-## 📡 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/auth/me` | Get current user |
-| POST | `/api/auth/logout` | Logout |
-| POST | `/api/sessions` | Save a focus session |
-| GET | `/api/sessions` | Get user's session history |
-| GET | `/api/analytics` | Get dashboard stats |
-| GET | `/api/leaderboard` | Get top users |
-| POST | `/api/rooms` | Create a study room |
-| GET | `/api/rooms/{code}` | Get room by code |
-
----
-
-## 👨‍💻 Authors
-
-- **Abhay Mehta** — [GitHub](https://github.com/AbhayMehta88990)
