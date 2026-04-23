@@ -254,12 +254,20 @@ export default function StudyTogether() {
         // Subscribe to participants
         client.subscribe(`/topic/room/${code}/participants`, (msg) => {
           const data = JSON.parse(msg.body);
-          if (data.type === 'sync') {
-            // Full participant list from server
+          if (data.type === 'sync' && data.participants) {
+            // Full participant list from server (new backend)
             setParticipants(data.participants.map(p => ({ name: p.name, picture: p.picture })));
-            // Show join message for the new joiner (not ourselves)
             if (data.joinedName && data.joinedName !== user?.name) {
               setMessages((prev) => [...prev, { system: true, text: `${data.joinedName} joined the room` }]);
+            }
+          } else if (data.type === 'join') {
+            // Legacy single join message (old backend fallback)
+            setParticipants((prev) => {
+              if (prev.find((p) => p.name === data.name)) return prev;
+              return [...prev, { name: data.name, picture: data.picture }];
+            });
+            if (data.name !== user?.name) {
+              setMessages((prev) => [...prev, { system: true, text: `${data.name} joined the room` }]);
             }
           } else if (data.type === 'leave') {
             setParticipants((prev) => prev.filter((p) => p.name !== data.name));
@@ -335,6 +343,7 @@ export default function StudyTogether() {
       setRoomCode(data.roomCode);
       setRoomInfo(data);
       setTimeLeft(data.timerDuration);
+      setParticipants([{ name: user.name, picture: user.picture }]);
       setView('room');
       connectWs(data.roomCode);
     } catch (err) {
@@ -355,6 +364,7 @@ export default function StudyTogether() {
       setRoomCode(code);
       setRoomInfo(data);
       setTimeLeft(data.timerDuration);
+      setParticipants([{ name: user.name, picture: user.picture }]);
       setView('room');
       connectWs(code);
     } catch (err) {
@@ -730,44 +740,46 @@ export default function StudyTogether() {
           </div>
         </div>
       )}
-      {/* Camera feeds - fixed right side */}
-      {cameraOn && (
+      {/* Camera feeds - fixed right side. Show whenever local camera is on OR there are remote streams */}
+      {(cameraOn || Object.keys(remoteStreams).length > 0) && (
         <div className="fixed bottom-6 right-6 z-40 flex flex-col-reverse gap-3" style={{ width: '220px', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-          {/* Local video */}
-          <div className="border-4 border-neo-black bg-neo-black shadow-hard-lg overflow-hidden">
-            <div className="relative">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full aspect-[4/3] object-cover bg-black"
-              />
-              <div className="absolute top-2 left-2 flex items-center gap-1.5 border-2 border-white/20 bg-black/60 backdrop-blur-sm px-2 py-0.5">
-                <div className="h-2 w-2 rounded-full bg-neo-green animate-pulse" />
-                <span className="font-mono text-[10px] font-bold text-white/80">YOU</span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleCamera}
-                className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center border-2 border-white/20 bg-black/60 text-white/80 backdrop-blur-sm transition-colors hover:bg-neo-red hover:text-white"
-              >
-                <X size={12} strokeWidth={3} />
-              </button>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-neo-black">
-              {user?.picture ? (
-                <img src={user.picture} alt={user.name} className="h-4 w-4 rounded-full border border-white/20" referrerPolicy="no-referrer" />
-              ) : (
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-neo-green text-[7px] font-black">
-                  {user?.name?.charAt(0)}
+          {/* Local video - only when local camera is on */}
+          {cameraOn && (
+            <div className="border-4 border-neo-black bg-neo-black shadow-hard-lg overflow-hidden">
+              <div className="relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full aspect-[4/3] object-cover bg-black"
+                />
+                <div className="absolute top-2 left-2 flex items-center gap-1.5 border-2 border-white/20 bg-black/60 backdrop-blur-sm px-2 py-0.5">
+                  <div className="h-2 w-2 rounded-full bg-neo-green animate-pulse" />
+                  <span className="font-mono text-[10px] font-bold text-white/80">YOU</span>
                 </div>
-              )}
-              <span className="font-mono text-[11px] font-bold text-white/80 truncate">{user?.name}</span>
+                <button
+                  type="button"
+                  onClick={toggleCamera}
+                  className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center border-2 border-white/20 bg-black/60 text-white/80 backdrop-blur-sm transition-colors hover:bg-neo-red hover:text-white"
+                >
+                  <X size={12} strokeWidth={3} />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-neo-black">
+                {user?.picture ? (
+                  <img src={user.picture} alt={user.name} className="h-4 w-4 rounded-full border border-white/20" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-neo-green text-[7px] font-black">
+                    {user?.name?.charAt(0)}
+                  </div>
+                )}
+                <span className="font-mono text-[11px] font-bold text-white/80 truncate">{user?.name}</span>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Remote video feeds */}
+          {/* Remote video feeds - ALWAYS show when available, even if local camera is off */}
           {Object.entries(remoteStreams).map(([peerId, info]) => (
             <RemoteVideoCard key={peerId} peerId={peerId} info={info} />
           ))}
