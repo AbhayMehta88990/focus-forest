@@ -1,8 +1,5 @@
-# 🌳 Focus Forest
 
-> Grow trees by staying focused. A gamified Pomodoro productivity app with 3D plants, study rooms, and leaderboards.
-
-### 🔗 [Live Demo → focus-forest-two.vercel.app](https://focus-forest-two.vercel.app)
+###  [Live Demo → focus-forest-two.vercel.app](https://focus-forest-two.vercel.app)
 
 ---
 
